@@ -14,7 +14,7 @@ import pathToRegexp from 'path-to-regexp'
 
 export default {
   data() {
-    return {
+    return { 
       levelList: null
     }
   },
@@ -32,9 +32,9 @@ export default {
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
       const first = matched[0]
 
-      if (!this.isDashboard(first)) {
-        matched = [{ path: '/dashboard', meta: { title: 'Dashboard' }}].concat(matched)
-      }
+      // if (!this.isDashboard(first)) {
+      //   matched = [{ path: '/classify', meta: { title: '软件资源库后台管理' }}].concat(matched)
+      // }
 
       this.levelList = matched.filter(item => item.meta && item.meta.title && item.meta.breadcrumb !== false)
     },
