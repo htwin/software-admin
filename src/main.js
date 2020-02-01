@@ -1,5 +1,11 @@
 import Vue from 'vue'
 
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+  
+Vue.use(VueQuillEditor)
 import 'normalize.css/normalize.css' // A modern alternative to CSS resets
 
 import ElementUI from 'element-ui'
@@ -14,6 +20,7 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+
 
 /**
  * If you don't want to use mock-server

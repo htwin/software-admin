@@ -17,20 +17,20 @@
             <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
           </template>
           <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.row.id)">编辑</el-button>
+            <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
-       <el-dialog title="新增|编辑类别" :visible.sync="dialogFormVisible">
+       <el-dialog :title="classify.id==undefined?'增加类别':'编辑类别'" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="类别名称" label-width="100px">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="classify.name" autocomplete="off"></el-input>
         </el-form-item>
         
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="handleCancel()">取 消</el-button>
         <el-button type="primary" @click="handleSave()">保存</el-button>
       </div>
     </el-dialog>
@@ -47,22 +47,10 @@ export default {
       dialogFormVisible: false,
       classify:{},
       form:{},
-      tableData: [
-        {
-          id: "1",
-          name: "王小黄",
-          createtime: "2016-05-02",
-          updatetime: "2016-05-02"
-        },
-        {
-          id: "123",
-          name: "王小黄",
-          createtime: "2016-05-02",
-          updatetime: "2016-05-02"
-        }
-      ],
       search: "",
-      classifyList:[]
+      classifyList:[],
+      name:"123"
+      
     };
   },
   created(){
@@ -73,7 +61,8 @@ export default {
   },
   methods: {
     handleSave(){
-      classifyApi.save(this.form).then(res=>{
+
+      classifyApi.save(this.classify).then(res=>{
         if(res.data.success){
           this.$message({
             type:"info",
@@ -91,9 +80,14 @@ export default {
         }
       })
     },
-    handleEdit(id) {
+    handleEdit(entity) {
+      this.classify = entity
+      // this.classify.id = entity.id;
+      // this.classify.name = entity.name;
+      // this.classify.createtime = entity.createtime;
+      // this.classify.updatetime = entity.updatetime;
       this.dialogFormVisible=true;
-      console.log(id);
+      console.log(this.classify.id)
     },
     handleDelete(id) {
 
@@ -127,7 +121,13 @@ this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
      
     },
     handleAdd(){
+      this.classify = {};
      this.dialogFormVisible=true;
+    },
+    handleCancel(){
+     
+     this.dialogFormVisible=false;
+    this.$router.go(0);
     }
   }
 };

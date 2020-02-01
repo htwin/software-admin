@@ -8,7 +8,7 @@
     </div>
     <div>
       <el-table
-        :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
+        :data="softList.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
         style="width: 100%"
       >
         <el-table-column type="expand">
@@ -36,8 +36,13 @@
                 <span>{{ props.row.comment }}</span>
               </el-form-item>
               <el-form-item>
-                <el-button size="small" plain>查看软件详情</el-button>
+                
+                <!-- 后面优化 -->
+                <el-button size="small" plain @Click="getTutorial(props.row.id)">查看详情</el-button>
+                <el-button size="small" plain @Click="getTutorial(props.row.id)">添加教程</el-button>
+           
               </el-form-item>
+
             </el-form>
           </template>
         </el-table-column>
@@ -51,22 +56,28 @@
             <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
           </template>
           <template slot-scope="scope">
-            <el-button size="mini" @click="handleEdit(scope.row.id)">编辑</el-button>
+             <router-link :to="'/soft/add?id='+scope.row.id">
+        <el-button size="mini">编辑</el-button>
+      </router-link>
+            
             <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <div style="text-align:center;margin-top:10px">
-      <el-pagination background layout="prev, pager, next" page-size="10" :total="total"></el-pagination>
+      <el-pagination background layout="prev, pager, next" :current-page.sync="page" @current-change="changePage" @prev-click="prevPage()" @next-click="nextPage()" :page-size="size" :total="total"></el-pagination>
     </div>
   </div>
 </template>
 <script>
+import softApi from "@/api/soft"
 export default {
   data() {
     return {
-      total: 50,
+      page: 1,
+      size: 5,
+      total: 17,
       dialogFormVisible: false,
       classify: {},
       form: {},
@@ -84,18 +95,81 @@ export default {
           updatetime: "2016-05-02"
         }
       ],
-      search: ""
+      search: "",
+      softList:[]
     };
   },
+  created(){
+    softApi.search(this.page,this.size,{}).then(res=>{
+    
+      this.softList = res.data.data.rows;
+      this.total = res.data.data.total;
+      
+    })
+  },
   methods: {
-    handleEdit(id) {
-      this.dialogFormVisible = true;
-      console.log(id);
+
+    changePage(page){
+      console.log(page)
+      softApi.search(page,this.size,{}).then(res=>{
+    
+      this.softList = res.data.data.rows;
+      this.total = res.data.data.total;
+      
+    })
     },
-    handleDelete(index, row) {
-      console.log(index, row);
+
+    prevPage(){
+      this.page = this.page - 1
+       softApi.search(this.page,this.size,{}).then(res=>{
+    
+      this.softList = res.data.data.rows;
+      this.total = res.data.data.total;
+      
+    })
     },
-    handleAdd() {}
+    nextPage(){
+      this.page = this.page + 1
+      softApi.search(this.page,this.size,{}).then(res=>{
+    
+      this.softList = res.data.data.rows;
+      this.total = res.data.data.total;
+      
+    })
+    },
+    handleDelete(id) {
+
+this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+           softApi.deleteById(id).then(res=>{
+             console.log(res.data)
+        if(res.data.success){
+          this.$message({
+            type:"info",
+            message:"删除成功"
+          })
+          this.$router.go(0);
+        }else{
+          this.$message({
+            type:"error",
+            message:"删除失败，请稍后再试！！！"
+          })
+        }
+      })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+
+
+     
+    },
+    
   }
 };
 </script>

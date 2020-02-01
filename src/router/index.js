@@ -79,11 +79,17 @@ export const constantRoutes = [
   {
     path: '/tutorial',
     component: Layout,
+    meta: { title: '教程管理', icon: 'example' },
     children: [
       {
         path: 'index',
         component: () => import('@/views/tutorial/index'),
         meta: { title: '教程管理', icon: 'form' }
+      },
+      {
+        path: 'add',
+        component: () => import('@/views/tutorial/add'),
+        meta: { title: '新增教程', icon: 'table' }
       }
     ]
   },

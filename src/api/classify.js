@@ -12,9 +12,17 @@ export default{
 
     //保存 修改或增加
     save(classify){
+
+        var operation= "add"
+        var method = "post"
+        if(classify.id != undefined){
+            operation = "update"
+            method = "put"
+        }
+
         return request({
-            url: `/${group_name}/${api_name}/add`,
-            method: 'post',
+            url: `/${group_name}/${api_name}/${operation}`,
+            method: method,
             data: classify
         })
     },
