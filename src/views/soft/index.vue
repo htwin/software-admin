@@ -38,19 +38,37 @@
               <el-form-item>
                 
                 <!-- 后面优化 -->
-                <el-button size="small" plain @Click="getTutorial(props.row.id)">查看详情</el-button>
-                <el-button size="small" plain @Click="getTutorial(props.row.id)">添加教程</el-button>
+
+                <a :href="'#/tutorial/add?softwareId='+props.row.id"><el-button v-if="props.row.hasTutorial==0" size="small" plain> <el-link>添加教程</el-link></el-button></a>
            
               </el-form-item>
 
             </el-form>
           </template>
         </el-table-column>
-        <el-table-column label="id" prop="id"></el-table-column>
+
+        <el-table-column v-for="info in rightHeader" :key="info.key" 
+          :property="info.key"
+          :label="info.label"
+         >
+             <template slot-scope="scope" >
+               <span v-if="scope.column.property.indexOf('time')!=-1">
+                  {{scope.row[scope.column.property]|formatDate}}
+               </span>
+               <span v-if="scope.column.property.indexOf('time')==-1&&scope.column.property!='pic'">
+                  {{scope.row[scope.column.property]}}
+               </span>
+               <img v-if="scope.column.property=='pic'" width="150px" height="100px" :src="scope.row[scope.column.property]"/>
+                 
+              </template>
+              
+          </el-table-column>
+
+        <!-- <el-table-column label="id" prop="id"></el-table-column>
         <el-table-column label="软件名称" prop="name"></el-table-column>
         <el-table-column label="软件图片" prop="pic"></el-table-column>
         <el-table-column label="创建时间" prop="createtime"></el-table-column>
-        <el-table-column label="修改时间" prop="updatetime"></el-table-column>
+        <el-table-column label="修改时间" prop="updatetime"></el-table-column> -->
         <el-table-column>
           <template slot="header" slot-scope="scope">
             <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
@@ -72,6 +90,7 @@
 </template>
 <script>
 import softApi from "@/api/soft"
+import { formatDate } from '@/utils/date.js'
 export default {
   data() {
     return {
@@ -81,18 +100,27 @@ export default {
       dialogFormVisible: false,
       classify: {},
       form: {},
-      tableData: [
+      
+      rightHeader: [
         {
-          id: "1",
-          name: "王小黄",
-          pic: "这是图片",
-          score: 2.5,
-          download: 5,
-          thumb: 3,
-          comment: 10,
-          ishot: 1,
-          createtime: "2016-05-02",
-          updatetime: "2016-05-02"
+          label: 'ID',
+          key: 'id'
+        },
+        {
+          label: '软件名称',
+          key: 'name'
+        },
+         {
+          label: '软件图片',
+          key: 'pic'
+        },
+        {
+          label: '创建时间',
+          key: 'createtime'
+        },
+        {
+          label: '修改时间',
+          key: 'updatetime'
         }
       ],
       search: "",
@@ -106,6 +134,17 @@ export default {
       this.total = res.data.data.total;
       
     })
+  },
+  filters: {
+   /*
+    时间格式自定义 只需把字符串里面的改成自己所需的格式
+   */ 
+ 
+   formatDate(time) {
+    var date = new Date(time);
+    return formatDate(date, 'yyyy-MM-dd hh:mm:ss'); 
+   },
+  
   },
   methods: {
 

@@ -11,10 +11,22 @@
         :data="tutorialList.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
         style="width: 100%"
       >
-        <el-table-column label="id" prop="id"></el-table-column>
-        <el-table-column label="所属软件" prop="softName"></el-table-column>
-        <el-table-column label="创建时间" prop="createtime"></el-table-column>
-        <el-table-column label="修改时间" prop="updatetime"></el-table-column>
+       <el-table-column v-for="info in rightHeader" :key="info.key" 
+          :property="info.key"
+          :label="info.label"
+         >
+             <template slot-scope="scope" >
+               <span v-if="scope.column.property.indexOf('time')!=-1">
+                  {{scope.row[scope.column.property]|formatDate}}
+               </span>
+               <span v-if="scope.column.property.indexOf('time')==-1">
+                  {{scope.row[scope.column.property]}}
+               </span>
+               
+                 
+              </template>
+              
+          </el-table-column>
         <el-table-column>
           <template slot="header" slot-scope="scope">
             <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
@@ -41,6 +53,7 @@
 </template>
 <script>
 import tutorialApi from "@/api/tutorial"
+import { formatDate } from '@/utils/date.js'
 export default {
   data() {
     return {
@@ -50,23 +63,38 @@ export default {
       dialogFormVisible: false,
       classify:{},
       form:{},
-      tableData: [
+      rightHeader: [
         {
-          id: "1",
-          softName: "王小黄",
-          createtime: "2016-05-02",
-          updatetime: "2016-05-02"
+          label: 'ID',
+          key: 'id'
         },
         {
-          id: "123",
-          softName: "王小黄",
-          createtime: "2016-05-02",
-          updatetime: "2016-05-02"
+          label: '所属软件',
+          key: 'softName'
+        },
+        {
+          label: '创建时间',
+          key: 'createtime'
+        },
+        {
+          label: '修改时间',
+          key: 'updatetime'
         }
       ],
       search: "",
       tutorialList:[]
     };
+  },
+   filters: {
+   /*
+    时间格式自定义 只需把字符串里面的改成自己所需的格式
+   */ 
+ 
+   formatDate(time) {
+    var date = new Date(time);
+    return formatDate(date, 'yyyy-MM-dd hh:mm:ss'); 
+   },
+  
   },
   created(){
     tutorialApi.search(this.page,this.size,{}).then(res=>{

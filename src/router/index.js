@@ -104,7 +104,34 @@ export const constantRoutes = [
       }
     ]
   },
-
+  {
+    path: '/statistics',
+    component: Layout,
+    meta: { title: '数据中心', icon: 'form' },
+    redirect:{name:"college"},
+    children: [
+      {
+        path: 'statistics',
+        name: 'statistics',
+        component: () => import('@/views/statistics/statistics'),
+        meta: { title: '数据中心', icon: 'form' },
+        hidden:true,
+        children:[
+          {
+            path:'college',
+            name:"college",
+            component:()=> import('@/views/statistics/college'),
+            hidden:true
+          },
+          {
+            path:'software',
+            component:()=> import('@/views/statistics/software'),
+            hidden:true
+          }
+        ]
+      }
+    ]
+  },
   
 
   // 404 page must be placed at the end !!!

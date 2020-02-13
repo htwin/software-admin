@@ -4,16 +4,36 @@
       <el-button type="primary" size="mini" @click="handleAdd()">新增</el-button>
     </div>
     <div>
+
       <el-table
         :data="classifyList.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
         style="width: 100%"
+        
       >
-        <el-table-column label="id" prop="id"></el-table-column>
+        <!-- <el-table-column label="id" prop="id"></el-table-column>
         <el-table-column label="类别名称" prop="name"></el-table-column>
-        <el-table-column label="创建时间" prop="createtime"></el-table-column>
-        <el-table-column label="修改时间" prop="updatetime"></el-table-column>
+        <el-table-column label="创建时间" prop="scope.row.id"></el-table-column>
+        <el-table-column label="修改时间" prop="updatetime"></el-table-column> -->
+
+        <el-table-column v-for="info in rightHeader" :key="info.key" 
+          :property="info.key"
+          :label="info.label"
+         >
+             <template slot-scope="scope" >
+               <span v-if="scope.column.property.indexOf('time')!=-1">
+                  {{scope.row[scope.column.property]|formatDate}}
+               </span>
+               <span v-if="scope.column.property.indexOf('time')==-1">
+                  {{scope.row[scope.column.property]}}
+               </span>
+               
+                 
+              </template>
+              
+          </el-table-column>
+
         <el-table-column>
-          <template slot="header" slot-scope="scope">
+          <template slot="header">
             <el-input v-model="search" size="mini" placeholder="输入关键字搜索" />
           </template>
           <template slot-scope="scope">
@@ -21,6 +41,7 @@
             <el-button size="mini" type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
+
       </el-table>
        <el-dialog :title="classify.id==undefined?'增加类别':'编辑类别'" :visible.sync="dialogFormVisible">
       <el-form :model="form">
@@ -41,6 +62,7 @@
 </template>
 <script>
 import classifyApi from "@/api/classify"
+ import { formatDate } from '@/utils/date.js'
 export default {
   data() {
     return {
@@ -49,9 +71,39 @@ export default {
       form:{},
       search: "",
       classifyList:[],
-      name:"123"
+      name:"123",
+      rightHeader: [
+        {
+          label: 'ID',
+          key: 'id'
+        },
+        {
+          label: '类别名称',
+          key: 'name'
+        },
+        {
+          label: '创建时间',
+          key: 'createtime'
+        },
+        {
+          label: '修改时间',
+          key: 'updatetime'
+        }
+      ],
       
     };
+  },
+  
+   filters: {
+   /*
+    时间格式自定义 只需把字符串里面的改成自己所需的格式
+   */ 
+ 
+   formatDate(time) {
+    var date = new Date(time);
+    return formatDate(date, 'yyyy-MM-dd hh:mm:ss'); 
+   },
+  
   },
   created(){
     classifyApi.list().then(res=>{
