@@ -1,9 +1,9 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
+    <el-form ref="admin" :model="admin" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">管理员登录</h3>
       </div>
 
       <el-form-item prop="username">
@@ -11,9 +11,9 @@
           <svg-icon icon-class="user" />
         </span>
         <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="Username"
+         
+          v-model="admin.username"
+          placeholder="请输入用户名"
           name="username"
           type="text"
           tabindex="1"
@@ -28,9 +28,9 @@
         <el-input
           :key="passwordType"
           ref="password"
-          v-model="loginForm.password"
+          v-model="admin.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="请输入密码"
           name="password"
           tabindex="2"
           auto-complete="on"
@@ -43,10 +43,7 @@
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
+     
 
     </el-form>
   </div>
@@ -54,27 +51,29 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+import adminApi from '@/api/admin'
+import {setAdmin} from '@/utils/auth'
 export default {
   name: 'Login',
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!validUsername(value)) {
-        callback(new Error('Please enter the correct user name'))
+        callback(new Error('请输入正确的用户名'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
-      if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+      if (value.length < 5) {
+        callback(new Error('密码不能少于6位'))
       } else {
         callback()
       }
     }
     return {
-      loginForm: {
-        username: 'admin',
-        password: '111111'
+      admin: {
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -106,22 +105,36 @@ export default {
     },
     handleLogin() {
       
-      this.$router.push("/")
-
-      // this.$refs.loginForm.validate(valid => {
-      //   if (valid) {
-      //     this.loading = true
-       //    this.$store.dispatch('user/login', this.loginForm).then(() => {
-      //       this.$router.push({ path: this.redirect || '/' })
-      //       this.loading = false
-      //     }).catch(() => {
-      //       this.loading = false
-      //     })
-      //   } else {
-      //     console.log('error submit!!')
-      //     return false
-      //   }
-      // })
+     
+      this.$refs.admin.validate(valid => {
+        if (valid) {
+          this.loading = true
+          adminApi.login(this.admin).then(res=>{
+            if(res.data.success){
+               setAdmin(res.data.data.username,res.data.data.token);
+               this.$router.push("/")
+               this.loading = false
+            }else{
+              this.$message({
+                type:"error",
+                message:res.data.message
+              })
+               this.loading = false
+            }
+          }).catch(() => {
+            this.loading = false
+          })
+          // this.$store.dispatch('user/login', this.admin).then(() => {
+          //   this.$router.push({ path: this.redirect || '/' })
+          //   this.loading = false
+          // }).catch(() => {
+          //   this.loading = false
+          // })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     }
   }
 }
