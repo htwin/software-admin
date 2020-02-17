@@ -2,14 +2,18 @@
   <div>
     <div style="margin-top:20px;margin-left:20px">
       <el-button plain size="mini" @click="handleAdd()">添加用户</el-button>
-      <el-select size="mini" clearable  v-model="user.collegeId" @clear="clearChange()"  @change="changeCollege(user.collegeId)" placeholder="选择学院">
-              <el-option
-                v-for="item in collegeList"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+      <el-select
+        size="mini"
+        clearable
+        v-model="searchEntity.collegeId"
+        @clear="clearChange()"
+        @change="changeCollege(searchEntity.collegeId)"
+        placeholder="选择学院"
+      >
+        <el-option v-for="item in collegeList" :key="item.id" :label="item.name" :value="item.id"></el-option>
       </el-select>
+      <el-input v-model="searchEntity.name" size="mini" style="width:200px" placeholder="请输入姓名"></el-input>
+      <el-button size="mini" type="primary" @click="searchUser()" icon="el-icon-search">搜索</el-button>
     </div>
     <div>
       <el-table
@@ -58,15 +62,13 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item label="学号" label-width="100px">
+         <el-form-item label="学号" label-width="100px" v-if="user.id!=undefined">
             <el-input v-model="user.account" autocomplete="off" style="width:200px"></el-input>
           </el-form-item>
           <el-form-item label="姓名" label-width="100px">
             <el-input v-model="user.name" autocomplete="off" style="width:200px"></el-input>
           </el-form-item>
-          <el-form-item label="密码" label-width="100px">
-            <el-input v-model="user.password" type="password" style="width:200px"></el-input>
-          </el-form-item>
+         
           <el-form-item label="性别" label-width="100px">
             <el-radio v-model="user.sex" :label="1">男</el-radio>
             <el-radio v-model="user.sex" :label="0">女</el-radio>
@@ -82,7 +84,19 @@
       </el-dialog>
     </div>
     <div style="text-align:center;margin-top:10px">
-      <el-pagination
+       <el-pagination
+     @size-change="handleSizeChange"
+      @current-change="changePage"
+      :current-page.sync="page"
+       @prev-click="prevPage()"
+        @next-click="nextPage()"
+      :page-sizes="[5, 10, 30, 100]"
+      :page-size="size"
+      layout="total, sizes, prev, pager, next"
+      :total="total">
+    </el-pagination>
+
+      <!-- <el-pagination
         background
         layout="prev, pager, next"
         :current-page.sync="page"
@@ -91,7 +105,7 @@
         @next-click="nextPage()"
         :page-size="size"
         :total="total"
-      ></el-pagination>
+      ></el-pagination> -->
     </div>
   </div>
 </template>
@@ -107,7 +121,8 @@ export default {
       total: 0,
       dialogFormVisible: false,
       user: {},
-      collegeList:[],
+      searchEntity:{},
+      collegeList: [],
       rightHeader: [
         {
           label: "学院",
@@ -159,30 +174,43 @@ export default {
       this.total = res.data.data.total;
     });
 
-     collegeApi.list().then(res=>{
-        console.log(res.data);
-        if(res.data.success){
-          this.collegeList = res.data.data;
-        }else{
-          this.$message({
-            type:"error",
-            message:"加载学院失败，请稍后再试！！！"
-          })
-        }
-       
-      })
+    collegeApi.list().then(res => {
+      console.log(res.data);
+      if (res.data.success) {
+        this.collegeList = res.data.data;
+      } else {
+        this.$message({
+          type: "error",
+          message: "加载学院失败，请稍后再试！！！"
+        });
+      }
+    });
   },
   methods: {
-    clearChange(){
-      this.user = {}
-     
+    handleSizeChange(size){
+      this.size = size;
+      userApi.search(this.page, this.size, this.searchEntity).then(res => {
+        console.log(res.data);
+        this.userList = res.data.data.rows;
+        this.total = res.data.data.total;
+      });
     },
-    changeCollege(collegeId){
-      userApi.search(this.page, this.size, this.user).then(res => {
-      console.log(res.data);
-      this.userList = res.data.data.rows;
-      this.total = res.data.data.total;
-    });
+    searchUser() {
+      userApi.search(this.page, this.size, this.searchEntity).then(res => {
+        console.log(res.data);
+        this.userList = res.data.data.rows;
+        this.total = res.data.data.total;
+      });
+    },
+    clearChange() {
+      this.user.collegeId = "";
+    },
+    changeCollege(collegeId) {
+      userApi.search(this.page, this.size, this.searchEntity).then(res => {
+        console.log(res.data);
+        this.userList = res.data.data.rows;
+        this.total = res.data.data.total;
+      });
       console.log(collegeId);
     },
     handleSave() {
@@ -206,7 +234,7 @@ export default {
     },
     changePage(page) {
       console.log(page);
-      userApi.search(page, this.size, this.user).then(res => {
+      userApi.search(page, this.size, this.searchEntity).then(res => {
         this.userList = res.data.data.rows;
         this.total = res.data.data.total;
       });
@@ -214,14 +242,14 @@ export default {
 
     prevPage() {
       this.page = this.page - 1;
-      userApi.search(this.page, this.size, this.user).then(res => {
+      userApi.search(this.page, this.size, this.searchEntity).then(res => {
         this.userList = res.data.data.rows;
         this.total = res.data.data.total;
       });
     },
     nextPage() {
       this.page = this.page + 1;
-      userApi.search(this.page, this.size, this.user).then(res => {
+      userApi.search(this.page, this.size, this.searchEntity).then(res => {
         this.userList = res.data.data.rows;
         this.total = res.data.data.total;
       });
@@ -263,6 +291,7 @@ export default {
         });
     },
     handleCancel() {
+      
       this.dialogFormVisible = false;
       this.$router.go(0);
     },

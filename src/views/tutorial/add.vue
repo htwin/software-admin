@@ -5,7 +5,7 @@
         <el-input v-model="tutorial.softName" :disabled="true" style="width:300px"></el-input>
       </el-form-item>
        <el-form-item label="所属软件" v-if="softwareId == undefined">
-        <el-select v-model="tutorial.softwareId" placeholder="请选择">
+        <el-select v-model="tutorial.softwareId" placeholder="请选择" @change="selectOne">
           <el-option :label="item.name" :value="item.id" v-for="(item,index) in softList" :key="index"/>
         </el-select>
       </el-form-item>
@@ -13,7 +13,7 @@
       <el-form-item style="width:500px">
         <el-upload
           class="upload-demo"
-          action="http://localhost:9000/soft/soft/uploadFile"
+          action="http://localhost:9000/soft/soft/uploadPic"
           multiple
           :limit="1"
           :before-upload="beforeUpload"
@@ -85,17 +85,32 @@ export default {
     if(this.tutorial.id != undefined){
       tutorialApi.findById(this.tutorial.id).then(res=>{
        
+       if(res.data.success){
         this.tutorial = res.data.data
-        console.log(res.data)
+        softApi.findById(this.tutorial.softwareId).then(res=>{
+        this.softList.push(res.data.data)
+        })
+       }else{
+         this.$message({
+           type:"error",
+           message:"系统错误，请稍后再试"
+         })
+         this.$router.push(-1);
+       }
+        
+        
         
       })
     }
 
   },
   methods: {
+    selectOne(soft){
+      console.log(soft)
+    },
     beforeUpload(file){
       //上传之前判断 -是否为MP4
-      console.log("前"+file)
+     
     },
     handleSuccessFile(response, file, fileList){
       this.tutorial.video = response.data.url

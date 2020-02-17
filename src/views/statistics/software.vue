@@ -82,7 +82,7 @@ export default {
     },
     series: [
         {
-            name: '姓名',
+            name: '',
             type: 'pie',
             radius: '55%',
             center: ['40%', '50%'],
