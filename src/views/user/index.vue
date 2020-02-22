@@ -14,6 +14,20 @@
       </el-select>
       <el-input v-model="searchEntity.name" size="mini" style="width:200px" placeholder="请输入姓名"></el-input>
       <el-button size="mini" type="primary" @click="searchUser()" icon="el-icon-search">搜索</el-button>
+     
+       <div style="float:right;margin-right:450px">
+         <el-upload
+          class="upload-demo"
+          action="http://localhost:9000/user/user/importUsers"
+          :limit="1"
+          :on-progress="handleProgress"
+          :on-success="handleSuccessFile"
+        >
+          <el-button size="mini" type="primary">批量导入</el-button>
+        </el-upload>
+       </div>
+       
+     
     </div>
     <div>
       <el-table
@@ -62,13 +76,13 @@
             </el-select>
           </el-form-item>
 
-         <el-form-item label="学号" label-width="100px" v-if="user.id!=undefined">
+          <el-form-item label="学号" label-width="100px" v-if="user.id!=undefined">
             <el-input v-model="user.account" autocomplete="off" style="width:200px"></el-input>
           </el-form-item>
           <el-form-item label="姓名" label-width="100px">
             <el-input v-model="user.name" autocomplete="off" style="width:200px"></el-input>
           </el-form-item>
-         
+
           <el-form-item label="性别" label-width="100px">
             <el-radio v-model="user.sex" :label="1">男</el-radio>
             <el-radio v-model="user.sex" :label="0">女</el-radio>
@@ -84,17 +98,17 @@
       </el-dialog>
     </div>
     <div style="text-align:center;margin-top:10px">
-       <el-pagination
-     @size-change="handleSizeChange"
-      @current-change="changePage"
-      :current-page.sync="page"
-       @prev-click="prevPage()"
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="changePage"
+        :current-page.sync="page"
+        @prev-click="prevPage()"
         @next-click="nextPage()"
-      :page-sizes="[5, 10, 30, 100]"
-      :page-size="size"
-      layout="total, sizes, prev, pager, next"
-      :total="total">
-    </el-pagination>
+        :page-sizes="[5, 10, 30, 100]"
+        :page-size="size"
+        layout="total, sizes, prev, pager, next"
+        :total="total"
+      ></el-pagination>
 
       <!-- <el-pagination
         background
@@ -105,7 +119,7 @@
         @next-click="nextPage()"
         :page-size="size"
         :total="total"
-      ></el-pagination> -->
+      ></el-pagination>-->
     </div>
   </div>
 </template>
@@ -113,6 +127,7 @@
 import userApi from "@/api/user";
 import collegeApi from "@/api/college";
 import { formatDate } from "@/utils/date.js";
+import { Loading } from 'element-ui';
 export default {
   data() {
     return {
@@ -121,7 +136,8 @@ export default {
       total: 0,
       dialogFormVisible: false,
       user: {},
-      searchEntity:{},
+      searchEntity: {},
+      loading:{},
       collegeList: [],
       rightHeader: [
         {
@@ -187,7 +203,27 @@ export default {
     });
   },
   methods: {
-    handleSizeChange(size){
+    handleSuccessFile(response, file, fileList){
+      console.log("response:::"+response)
+        if(response.success){
+          this.loading.close();
+          this.$message({
+            "type":"info",
+             "message":"导入成功"
+          })
+          this.$router.go(0);
+        }
+    },
+    handleProgress(){
+      this.loading = this.$loading({
+          lock: true,
+          text: '导入中，请耐心等待。。。',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.7)'
+        })
+        
+    },
+    handleSizeChange(size) {
       this.size = size;
       userApi.search(this.page, this.size, this.searchEntity).then(res => {
         console.log(res.data);
@@ -291,7 +327,6 @@ export default {
         });
     },
     handleCancel() {
-      
       this.dialogFormVisible = false;
       this.$router.go(0);
     },
