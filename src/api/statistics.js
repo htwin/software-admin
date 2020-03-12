@@ -14,5 +14,11 @@ export default{
             url: `/${group_name}/${api_name}/software`,
             method:"get"
         })
+    },
+    exportCollege(){
+        return request({
+            url:`${group_name}/${api_name}/exportCollege`,
+            method:'get'
+        })
     }
 }

@@ -33,7 +33,7 @@
           </template>
           <template slot-scope="scope">
             <!-- 后面优化 -->
-             <el-link type="primary">查看详情</el-link>
+            
               <router-link :to="'/tutorial/add?id='+scope.row.id">
          <el-button size="mini">编辑</el-button>
       </router-link>

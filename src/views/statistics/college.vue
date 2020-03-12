@@ -1,8 +1,12 @@
 <template>
 
+        <div>
+          <el-button  size="mini" @click="exportCollege()">导出</el-button>
+          
+
         <div id="myChart" :style="{width: '1000px', height: '500px'}"></div>
   
-
+</div>
   
 </template>
 <script>
@@ -31,6 +35,10 @@ export default {
   },
   
   methods: {
+    exportCollege(){
+        window.location.href="http://localhost:9000/statistics/statistics/exportCollege";
+    },
+     
     getData(){
       var colleges = this.colleges;
       var college = [];

@@ -24,7 +24,9 @@
           :on-success="handleSuccessFile"
         >
           <el-button size="mini" type="primary">批量导入</el-button>
+          
         </el-upload>
+        <el-link href="http://localhost:9000/user/user/exportTemplate" type="danger">下载模板</el-link>
        </div>
        
      

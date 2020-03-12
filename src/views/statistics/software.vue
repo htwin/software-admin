@@ -1,5 +1,8 @@
 <template>
+<div>
+   <el-button  size="mini" @click="exportSoftware()">导出</el-button>
   <div id="myChart" :style="{width: '800px', height: '400px'}"></div>
+  </div>
 </template>
 <script>
 import statisticsApi from '@/api/statistics'
@@ -28,7 +31,9 @@ export default {
    
   },
   methods: {
-
+exportSoftware(){
+        window.location.href="http://localhost:9000/statistics/statistics/exportSoftware";
+    },
     
  genData(count) {
     var softList = this.software
