@@ -6,7 +6,13 @@ import { getToken } from '@/utils/auth'
 //创建axios实例
 const service = axios.create({
     baseURL: 'http://localhost:9000/',
+    //baseURL: 'http://47.102.120.6:9000/',
     timeout: 30000,//请求超时时间,
+    //设置默认请求头，使post请求发送的是formdata格式数据// axios的header默认的Content-Type好像是'application/json;charset=UTF-8',我的项目都是用json格式传输，如果需要更改的话，可以用这种方式修改
+//   headers: {  
+//     "Content-Type": "application/x-www-form-urlencoded"
+//   },
+  withCredentials: true // 允许携带cookie
 });
 
 // // request interceptor

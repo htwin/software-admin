@@ -43,95 +43,36 @@ export const constantRoutes = [
     hidden: true
   },
 
+ 
+
+ 
+
+
   {
     path: '/',
     component: Layout,
-    redirect: '/classify',
-    children: [{
-      path: 'classify', 
-      component: () => import('@/views/classify/index'),
-      meta: { title: '类别管理', icon: 'dashboard' }
-    },
-    
-  ]
-  },
-
-  {
-    path: '/soft',
-    component: Layout,
-    meta: { title: '软件管理', icon: 'example' },
+    redirect: '/staff',
     children: [
       {
-        path: 'index',
-       
-        component: () => import('@/views/soft/index'),
-        meta: { title: '软件管理', icon: 'table' }
-      },
-      {
-        path: 'add',
-        
-        component: () => import('@/views/soft/add'),
-        meta: { title: '添加软件', icon: 'table' }
-      }
-    ]
-  },
-
-  {
-    path: '/tutorial',
-    component: Layout,
-    meta: { title: '教程管理', icon: 'example' },
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/tutorial/index'),
-        meta: { title: '教程管理', icon: 'form' }
-      },
-      {
-        path: 'add',
-        component: () => import('@/views/tutorial/add'),
-        meta: { title: '新增教程', icon: 'table' }
+        path: 'staff',
+        component: () => import('@/views/staff/index'),
+        meta: { title: '员工管理', icon: 'form' }
       }
     ]
   },
   {
-    path: '/user',
+    path: '/store',
     component: Layout,
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/user/index'),
-        meta: { title: '用户管理', icon: 'form' }
+        path: 'store',
+        component: () => import('@/views/store/index'),
+        meta: { title: '门店管理', icon: 'form' }
       }
     ]
   },
-  {
-    path: '/statistics',
-    component: Layout,
-    meta: { title: '数据中心', icon: 'form' },
-    redirect:{name:"college"},
-    children: [
-      {
-        path: 'statistics',
-        name: 'statistics',
-        component: () => import('@/views/statistics/statistics'),
-        meta: { title: '数据中心', icon: 'form' },
-        hidden:true,
-        children:[
-          {
-            path:'college',
-            name:"college",
-            component:()=> import('@/views/statistics/college'),
-            hidden:true
-          },
-          {
-            path:'software',
-            component:()=> import('@/views/statistics/software'),
-            hidden:true
-          }
-        ]
-      }
-    ]
-  },
+  
+  
   
 
   // 404 page must be placed at the end !!!

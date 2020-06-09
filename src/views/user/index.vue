@@ -127,7 +127,7 @@
 </template>
 <script>
 import userApi from "@/api/user";
-import collegeApi from "@/api/college";
+
 import { formatDate } from "@/utils/date.js";
 import { Loading } from 'element-ui';
 export default {
@@ -192,17 +192,7 @@ export default {
       this.total = res.data.data.total;
     });
 
-    collegeApi.list().then(res => {
-      console.log(res.data);
-      if (res.data.success) {
-        this.collegeList = res.data.data;
-      } else {
-        this.$message({
-          type: "error",
-          message: "加载学院失败，请稍后再试！！！"
-        });
-      }
-    });
+    
   },
   methods: {
     handleSuccessFile(response, file, fileList){
